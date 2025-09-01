@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authrorize from "../middleware/auth.middleware.js";
-import { createSubscription } from "../controllers/subscription.controller.js";
+import { createSubscription, getUserSubscription } from "../controllers/subscription.controller.js";
 
 const subscriptionRouter = Router();
 
@@ -14,6 +14,8 @@ subscriptionRouter.get('/:id',(req,res) =>{
 })
 
 subscriptionRouter.post('/', authrorize, createSubscription)
+
+subscriptionRouter.get('/user/:id', authrorize, getUserSubscription)
 
 
 export default subscriptionRouter
