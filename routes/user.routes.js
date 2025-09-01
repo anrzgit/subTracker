@@ -1,20 +1,14 @@
 import { Router } from "express";
+import { getUser, getUsers } from "../controllers/user.controller.js";
+import authrorize from "../middleware/auth.middleware.js";
 
 
 const userRouter = Router();
 
 
-userRouter.get('/',(req, res) => {
-    res.json({
-        title : 'GET all users'
-    })
-})
+userRouter.get('/', getUsers)
 
-userRouter.get('/:id',(req, res) => {
-    res.json({
-        title : 'GET user Details'
-    })
-})
+userRouter.get('/:id', authrorize, getUser)
 
 userRouter.post('/',(req, res) => {
     res.json({
