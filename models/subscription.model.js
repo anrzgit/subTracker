@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { use } from "react";
+
 
 const subscriptionSchema = mongoose.Schema({
     name: {
@@ -29,7 +29,7 @@ const subscriptionSchema = mongoose.Schema({
     category: {
         type: String,
         required: [true, 'Category is required'],
-        enum: ['basic', 'standard', 'premium'],
+        enum: ['basic', 'standard', 'premium','entertainment'],
         default: 'basic'
     },
     paymentMethod : {
@@ -48,7 +48,7 @@ const subscriptionSchema = mongoose.Schema({
         required: [true, 'Start date is required'],
         validate : {
             validator: function(value) {
-                return value < this.endDate;
+                return value < this.renewalDate;
             },
             message: 'Start date must be before end date'
         }
@@ -71,8 +71,8 @@ const subscriptionSchema = mongoose.Schema({
 
 }, { timestamps: true })
 
-subscriptionSchema.pre('save', (next) => {
-    if (!this.renewalDate) {
+subscriptionSchema.pre('validate', function(next) {
+    if (!this.renewalDate && this.startDate && this.frequency) {
         const renewalPeriod = {
             monthly: 30,
             yearly: 365,
@@ -82,12 +82,13 @@ subscriptionSchema.pre('save', (next) => {
         this.renewalDate.setDate(this.renewalDate.getDate() + renewalPeriod[this.frequency]);
     }
 
-    if (!this.renewalDate < new Date()) {
-        this.status = 'expired';
+    // Now validate cross-field logic after setting renewalDate
+    if (this.startDate && this.renewalDate && this.startDate >= this.renewalDate) {
+        return next(new Error('Start date must be before renewal date'));
     }
-
     next();
 });
+
 
 const Subscription = mongoose.model('Subscription', subscriptionSchema);
 
