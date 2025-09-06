@@ -1,16 +1,23 @@
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
+    phoneNumber : {
+        type : String,
+        required : [true, 'Phone number is required'],
+        trim : true,
+        unique : true,
+        minLength : 10,
+    },
     name : {
         type : String,
-        required : [true, 'Name is required'],
+        required : [false, 'Name is required'],
         trim : true,
         minLength : 2,
         maxLength : 20,
     },
     email : {
         type : String,
-        required : [true, 'email is required'],
+        required : [false, 'email is required'],
         trim : true,
         unique : true,
         lowecase : true,
